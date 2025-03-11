@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Checkout</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Complete Your Purchase</h2>
+        
+        <!-- Section 1: Login -->
+        <div id="login-section" class="checkout-section">
+            <div class="checkout-section-header">
+                <h2><span class="section-number">1</span> Account Information</h2>
+                <div class="section-complete">
+                    <span class="checkmark">✓</span>
+                    <span>Logged In</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-details">
+                    <p>Logged in as: <span id="user-name" class="user-email">Loading...</span></p>
+                </div>
+                <button id="change-account-btn" class="change-button">Change</button>
+            </div>
+        </div>
+        
+        <!-- Section 2: Saved Address -->
+        <div id="address-section" class="checkout-section">
+            <div class="checkout-section-header">
+                <h2><span class="section-number">2</span> Shipping Address</h2>
+            </div>
+            <div id="saved-addresses" class="saved-addresses">
+                <!-- Saved addresses will be loaded here -->
+            </div>
+            <button id="add-address-btn" class="add-address-btn">+ Add New Address</button>
+            
+            <div id="new-address-form" class="new-address-form" style="display: none;">
+                <h3>Add New Address</h3>
+                <input type="text" id="address-name" placeholder="Full Name">
+                <input type="text" id="address-street" placeholder="Street Address">
+                <input type="text" id="address-city" placeholder="City">
+                <input type="text" id="address-state" placeholder="State/Province">
+                <input type="text" id="address-zip" placeholder="ZIP/Postal Code">
+                <input type="text" id="address-country" placeholder="Country">
+                <input type="text" id="address-phone" placeholder="Phone Number">
+                <button id="save-address-btn" class="save-address-btn">Save Address</button>
+            </div>
+        </div>
+        
+        <!-- Section 3: Order Summary -->
+        <div id="order-summary-section" class="checkout-section">
+            <div class="checkout-section-header">
+                <h2><span class="section-number">3</span> Order Summary</h2>
+            </div>
+            <div id="order-items" class="order-items">
+                <!-- Order items will be loaded here -->
+            </div>
+            <div class="order-totals">
+                <div class="order-total-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="order-total-row">
+                    <span>Shipping:</span>
+                    <span id="shipping">$0.00</span>
+                </div>
+                <div class="order-total-row">
+                    <span>Tax:</span>
+                    <span id="tax">$0.00</span>
+                </div>
+                <div class="order-total-row grand-total">
+                    <span>Total:</span>
+                    <span id="total-price">$0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 4: Payment Method -->
+        <div id="payment-section" class="checkout-section">
+            <div class="checkout-section-header">
+                <h2><span class="section-number">4</span> Payment Method</h2>
+            </div>
+            
+            <div id="credits-container" class="credits-container">
+                <div id="credits-summary" class="credits-summary">Available Credits: $0.00</div>
+                <button id="redeem-credits-btn" class="redeem-credits-btn" style="display: none;">Redeem Credits</button>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method-card" data-method="upi">
+                    <div class="payment-method-icon">
+                        <img src="https://www.datocms-assets.com/33606/1615819888-upi-india-review.png" alt="UPI">
+                    </div>
+                    <div class="payment-method-name">UPI</div>
+                </div>
+                <div class="payment-method-card" data-method="credit-card">
+                    <div class="payment-method-icon">
+                        <img src="https://icon-library.com/images/discover-credit-card-icon/discover-credit-card-icon-29.jpg" alt="Credit Card">
+                    </div>
+                    <div class="payment-method-name">Credit Card</div>
+                </div>
+                <div class="payment-method-card" data-method="debit-card">
+                    <div class="payment-method-icon">
+                        <img src="https://img.freepik.com/free-vector/realistic-debit-card-mockup_23-2149268521.jpg?w=826" alt="Debit Card">
+                    </div>
+                    <div class="payment-method-name">Debit Card</div>
+                </div>
+                <div class="payment-method-card" data-method="cod">
+                    <div class="payment-method-icon">
+                        <img src="https://static.vecteezy.com/system/resources/previews/023/253/005/original/cash-on-delivery-solid-icons-simple-stock-illustration-stock-vector.jpg" alt="COD">
+                    </div>
+                    <div class="payment-method-name">COD</div>
+                </div>
+            </div>
+            
+            <div id="payment-details" class="payment-details">
+                <!-- Payment details will be loaded here -->
+            </div>
+            
+            <button id="place-order-btn" class="place-order-btn" disabled>Place Order</button>
+        </div>
+    </main>
+    
+    <!-- Popups -->
+    <div id="popup-overlay" class="popup-overlay" style="display: none;"></div>
+    
+    <!-- Payment Method Popup -->
+    <div id="payment-method-popup" class="popup" style="display: none;">
+        <h2>Payment Details</h2>
+        <div class="payment-method-select">
+            <label for="payment-method">Select Payment Method</label>
+            <select id="payment-method">
+                <option value="upi">UPI</option>
+                <option value="credit-card">Credit Card</option>
+                <option value="debit-card">Debit Card</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+        </div>
+        <div id="payment-fields" class="payment-fields">
+            <!-- Payment fields will be loaded here -->
+        </div>
+        <div class="popup-buttons">
+            <button id="confirm-payment-btn" class="confirm-btn">Confirm</button>
+            <button id="cancel-payment-btn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Redeem Credits Popup -->
+    <div id="redeem-popup" class="popup" style="display: none;">
+        <h2>Redeem Credits</h2>
+        <div id="redeem-message" class="redeem-message">
+            <!-- Redeem message will be loaded here -->
+        </div>
+        <div class="popup-buttons">
+            <button id="redeem-yes-btn" class="confirm-btn">Yes, Use Credits</button>
+            <button id="redeem-no-btn" class="cancel-btn">No, Save for Later</button>
+        </div>
+    </div>
+    
+    <!-- Payment Confirmation Popup -->
+    <div id="payment-popup" class="popup" style="display: none;">
+        <h2>Confirm Order</h2>
+        <div id="bill-details" class="bill-details">
+            <!-- Bill details will be loaded here -->
+        </div>
+        <div class="popup-buttons">
+            <button id="pay-btn" class="confirm-btn">Pay Now</button>
+            <button id="cancel-payment-btn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+    
+    <script type="module" src="js/checkout.js"></script>
+</body>
+</html>

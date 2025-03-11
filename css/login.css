@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4; /* Light gray background */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #2b58c0; /* Base rich blue */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #e8eefc; /* Very light blue for hover */
+}
+
+/* Main Container */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px);
+}
+
+/* Popup Styles */
+.popup {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 600px; /* Adjust width as needed */
+    position: relative;
+    z-index: 10;
+}
+
+/* Login Container */
+.login-container {
+    display: flex;
+}
+
+/* Blue Side */
+.blue-side {
+    background-color: #2b58c0; /* Base rich blue */
+    color: white;
+    padding: 20px;
+    width: 50%; /* Half of the container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* White Side */
+.white-side {
+    background-color: white;
+    padding: 20px;
+    width: 50%; /* Half of the container */
+}
+
+/* Input Fields */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #2b58c0; /* Base rich blue */
+    outline: none;
+}
+
+/* Buttons */
+button {
+    background-color: #2b58c0; /* Base rich blue */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin: 10px 0;
+}
+
+button:hover {
+    background-color: #2047a0; /* Darker blue for hover */
+}
+
+/* Error Messages */
+.error-message {
+    color: #2b58c0; /* Base rich blue (replacing red) */
+    font-size: 0.9em;
+}
+
+/* Links */
+a {
+    color: #2b58c0; /* Base rich blue */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #2047a0; /* Darker blue for hover */
+}
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden by default */
+    z-index: 5;
+}

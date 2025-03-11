@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+    <header>
+        <h1>Shopping Cart</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <!-- <a href="product.html">Products</a> -->
+            <a href="checkout.html">Checkout</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Your Cart</h2>
+        <div id="cart-items">
+            <!-- Cart items will be loaded here -->
+        </div>
+        
+        <!-- This div will hold the price summary -->
+        <div class="price-summary">
+            <h3>PRICE DETAILS</h3>
+            <div id="total-price"></div>
+        </div>
+        
+        <div class="button-container">
+            <button class="clear-btn" onclick="clearCart()">Clear Cart</button>
+            <a href="checkout.html"><button class="checkout-btn">Place Order</button></a>
+        </div>
+    </main>
+
+    <script type="module" src="js/cart.js"></script>
+</body>
+</html>

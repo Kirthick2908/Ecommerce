@@ -1,0 +1,272 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f7fa; /* Light gray background */
+    color: #333; /* Dark gray text */
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Header Styling */
+header {
+    background-color: #2b58c0; /* Base rich blue */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 24px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #e8eefc; /* Very light blue for hover */
+}
+
+#logout-btn {
+    background-color: #2b58c0; /* Same blue as header */
+    color: white;
+    border: 1px solid white; /* White border for contrast */
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#logout-btn:hover {
+    background-color: #2047a0; /* Darker blue for hover */
+}
+
+/* Main Content */
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+section {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+    font-size: 20px;
+    color: #2b58c0; /* Base rich blue for headers */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #4d78d8; /* Lighter blue underline */
+    padding-bottom: 5px;
+}
+
+/* Input and Button Styling */
+input, select {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #2b58c0; /* Base rich blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px 5px 5px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:disabled {
+    background-color: #bdc3c7; /* Neutral gray for disabled */
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    background-color: #2047a0; /* Darker blue for hover */
+}
+
+/* All buttons use the same blue shade */
+#add-customer, #add-product, #delete-customer, #delete-product, #toggle-active-product {
+    background-color: #2b58c0;
+}
+
+#add-customer:hover, #add-product:hover, #delete-customer:hover, #delete-product:hover, #toggle-active-product:hover {
+    background-color: #2047a0; /* Consistent darker blue hover */
+}
+
+/* Messages and Errors */
+#customer-message, #product-message {
+    color: #2b58c0; /* Base rich blue for success messages */
+    margin-top: 10px;
+}
+
+#customer-error, #product-error {
+    color: #2b58c0; /* Base rich blue for errors */
+    margin-top: 10px;
+}
+
+/* Lists and Reports */
+#customer-list, #product-list, #top-customers-report, #cash-purchases-report, 
+#credit-purchases-report, #current-stock-report, #high-low-stock-report, 
+#sales-report, #top-bottom-items-report {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+#product-list div {
+    border-bottom: 1px solid #eee; /* Light gray border */
+    padding: 10px 0;
+}
+
+#product-list img {
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+/* Report Table Styling */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.report-table th, .report-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Light gray border */
+}
+
+.report-table th {
+    background-color: #2b58c0; /* Base rich blue header */
+    color: white;
+    font-weight: bold;
+}
+
+.report-table td {
+    vertical-align: top;
+}
+
+.report-table tbody tr:hover {
+    background-color: #f9f9f9; /* Light gray hover */
+}
+
+.report-table tfoot td {
+    font-weight: bold;
+    background-color: #e8eefc; /* Very light blue for footer */
+}
+
+/* Stock Summary Cards */
+.stock-summary {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.stock-card {
+    flex: 1;
+    background-color: #e8eefc; /* Very light blue */
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.stock-card h3 {
+    font-size: 16px;
+    color: #2b58c0; /* Base rich blue text */
+    margin-bottom: 10px;
+}
+
+.stock-card p {
+    font-size: 14px;
+}
+
+/* Top/Bottom Items Container */
+.top-bottom-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.top-bottom-container > div {
+    flex: 1;
+}
+
+.top-bottom-container h3 {
+    font-size: 16px;
+    color: #2b58c0; /* Base rich blue text */
+    margin-bottom: 10px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.pagination button {
+    background-color: #2b58c0; /* Base rich blue */
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #2047a0; /* Darker blue for hover */
+}
+
+.pagination span {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav {
+        margin-top: 10px;
+    }
+
+    input, select, button {
+        width: 100%;
+        max-width: none;
+    }
+
+    section {
+        padding: 15px;
+    }
+
+    .stock-summary, .top-bottom-container {
+        flex-direction: column;
+    }
+
+    .report-table th, .report-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome, <span id="user-name"></span></h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart</a>
+            <a href="checkout.html">Checkout</a>
+            <a href="#" id="profile-link">Profile</a> <!-- Simple link, no dropdown -->
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Profile Details</h2>
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <p><strong>UID:</strong> <span id="user-uid"></span></p>
+            <p><strong>Total Credits:</strong> <span id="user-total-credits"></span></p>
+            <div id="admin-dashboard-link" style="display: none;">
+                <a href="admin.html">Go to Dashboard</a>
+            </div>
+            <button id="logout-btn-profile">Logout</button>
+        </section>
+        <section>
+            <h2>Transaction History</h2>
+            <div id="transaction-history"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { auth, db } from "./js/app.js";
+        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { collection, getDocs, query, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        function checkAuthState() {
+            const nameSpan = document.getElementById("user-name");
+            const emailSpan = document.getElementById("user-email");
+            const uidSpan = document.getElementById("user-uid");
+            const totalCreditsSpan = document.getElementById("user-total-credits");
+            const adminDashboardLink = document.getElementById("admin-dashboard-link");
+
+            document.querySelector("main").innerHTML = "<p>Loading profile...</p>";
+
+            onAuthStateChanged(auth, async (user) => {
+                console.log("Auth state changed. User:", user);
+                if (user) {
+                    document.querySelector("main").innerHTML = `
+                        <section>
+                            <h2>Profile Details</h2>
+                            <p><strong>Email:</strong> <span id="user-email"></span></p>
+                            <p><strong>UID:</strong> <span id="user-uid"></span></p>
+                            <p><strong>Total Credits:</strong> <span id="user-total-credits"></span></p>
+                            <div id="admin-dashboard-link" style="display: none;">
+                                <a href="admin.html">Go to Dashboard</a>
+                            </div>
+                            <button id="logout-btn-profile">Logout</button>
+                        </section>
+                        <section>
+                            <h2>Transaction History</h2>
+                            <div id="transaction-history"></div>
+                        </section>
+                    `;
+
+                    // Re-select elements after DOM update
+                    const emailSpan = document.getElementById("user-email");
+                    const uidSpan = document.getElementById("user-uid");
+                    const totalCreditsSpan = document.getElementById("user-total-credits");
+                    const adminDashboardLink = document.getElementById("admin-dashboard-link");
+                    const logoutBtnProfile = document.getElementById("logout-btn-profile");
+
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (user.email === "kirthickdeivasigamani@gmail.com" || user.uid === "ORr9nFPvm2gYlOUlq4Imj4lOnwA2") {
+                        nameSpan.textContent = "Admin";
+                        emailSpan.textContent = "kirthickdeivasigamani@gmail.com";
+                        uidSpan.textContent = "ORr9nFPvm2gYlOUlq4Imj4lOnwA2";
+                        adminDashboardLink.style.display = "block";
+                    } else {
+                        nameSpan.textContent = userDoc.exists() && userDoc.data().name ? userDoc.data().name : "User";
+                        emailSpan.textContent = user.email;
+                        uidSpan.textContent = user.uid;
+                        adminDashboardLink.style.display = "none";
+                    }
+                    totalCreditsSpan.textContent = userDoc.exists() ? (userDoc.data().totalCredits || 0) : 0;
+
+                    // Attach logout event listener after DOM update
+                    logoutBtnProfile.addEventListener("click", logoutUser);
+
+                    loadTransactionHistory(user.uid);
+                } else {
+                    console.log("No user detected, redirecting to login");
+                    alert("You must be logged in to view your profile!");
+                    window.location.href = "login.html";
+                }
+            });
+        }
+
+        async function loadTransactionHistory(userId) {
+            const historyDiv = document.getElementById("transaction-history");
+            const q = query(collection(db, "orders"), where("userId", "==", userId));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                historyDiv.innerHTML = "<p>No transaction history found.</p>";
+                return;
+            }
+
+            historyDiv.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const order = doc.data();
+                const orderDiv = document.createElement("div");
+                orderDiv.className = "order";
+                orderDiv.innerHTML = `
+                    <p><strong>Order ID:</strong> ${doc.id}</p>
+                    <p><strong>Total:</strong> $${order.total}</p>
+                    <p><strong>Credits Earned:</strong> ${order.creditsEarned || 0}</p>
+                    <p><strong>Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+                    <p><strong>Items:</strong> ${Object.entries(order.items).map(([path, qty]) => {
+                        const [cat, sub, id] = path.split("/");
+                        return `${id} (x${qty})`;
+                    }).join(", ")}</p>
+                `;
+                historyDiv.appendChild(orderDiv);
+            });
+        }
+
+        function logoutUser() {
+            signOut(auth).then(() => {
+                alert("Logged out successfully!");
+                window.location.href = "login.html";
+            }).catch(error => {
+                console.error("Logout Error:", error);
+                alert("Failed to logout! Try again.");
+            });
+        }
+
+        checkAuthState();
+    </script>
+</body>
+</html>

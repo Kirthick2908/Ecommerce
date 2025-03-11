@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup</title>
+    <link rel="stylesheet" href="css/login.css"> <!-- Link to the new CSS file -->
+</head>
+<body>
+    <header>
+        <h1>Login / Signup</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="product.html">Products</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-options" id="auth-options">
+            <button id="user-login-btn">User Login</button>
+            <button id="admin-login-btn">Admin Login</button>
+        </div>
+
+        <!-- User Login Popup -->
+        <div class="popup-overlay" id="user-popup-overlay"></div>
+        <div class="popup" id="user-popup" style="display: none;">
+            <div class="login-container">
+                <div class="blue-side">
+                    <h2 id="user-popup-title">Login</h2> <!-- Added user-popup-title -->
+                    <p>Get access to your orders, wishlist, and more!</p>
+                </div>
+                <div class="white-side">
+                    <h2>Login</h2>
+                    <section id="user-login-section">
+                        <input type="email" id="login-email" placeholder="Email">
+                        <input type="password" id="login-password" placeholder="Password">
+                        <button id="toggle-login-password">Show</button>
+                        <button id="login-btn">Login</button>
+                        <p id="login-error" class="error-message"></p>
+                        <p><a href="#" id="reset-password-link">Forgot Password?</a> | <a href="#" id="toggle-to-signup">Not a user? Register</a></p>
+                    </section>
+                    <section id="user-signup-section" style="display: none;">
+                        <h2>User Signup</h2>
+                        <input type="email" id="signup-email" placeholder="Email">
+                        <input type="password" id="signup-password" placeholder="Password">
+                        <button id="toggle-signup-password">Show</button>
+                        <button id="signup-btn">Signup</button>
+                        <p id="signup-error" class="error-message"></p>
+                        <p><a href="#" id="toggle-to-login">Already a user? Login</a></p>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Popup -->
+        <div class="popup-overlay" id="admin-popup-overlay"></div>
+        <div class="popup" id="admin-popup" style="display: none;">
+            <div class="login-container">
+                <div class="blue-side">
+                    <h2>Admin Login</h2>
+                    <p>Access the admin panel to manage the site.</p>
+                </div>
+                <div class="white-side">
+                    <h2>Admin Login</h2>
+                    <input type="email" id="admin-email" placeholder="Admin Email">
+                    <input type="password" id="admin-password" placeholder="Admin Password">
+                    <button id="toggle-admin-password">Show</button>
+                    <button id="admin-login-btn-popup">Login</button>
+                    <p id="admin-error" class="error-message"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="js/auth.js"></script>
+    <script>
+        // Only keep overlay close listeners here
+        document.getElementById("user-popup-overlay").addEventListener("click", () => {
+            document.getElementById("user-popup").style.display = "none";
+            document.getElementById("auth-options").style.display = "block"; // Show buttons again
+        });
+
+        document.getElementById("admin-popup-overlay").addEventListener("click", () => {
+            document.getElementById("admin-popup").style.display = "none";
+            document.getElementById("auth-options").style.display = "block"; // Show buttons again
+        });
+    </script>
+</body>
+</html>

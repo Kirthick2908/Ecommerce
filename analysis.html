@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Dashboard</title>
+    <link rel="stylesheet" href="css/analysis.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Analysis Dashboard</h1>
+        <nav>
+            <a href="admin.html">Back to Admin</a>
+            <button id="logout-btn">Logout</button>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Product Analysis</h2>
+            <canvas id="productChart" width="400" height="200"></canvas>
+        </section>
+        <section>
+            <h2>Sales Analysis</h2>
+            <canvas id="salesChart" width="400" height="200"></canvas>
+        </section>
+    </main>
+
+    <script type="module" src="js/analysis.js"></script>
+</body>
+</html>

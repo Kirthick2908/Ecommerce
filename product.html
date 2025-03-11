@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/product.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Add Product</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart</a>
+            <a href="checkout.html">Checkout</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Enter Product Details</h2>
+            <select id="productCategory">
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="home-kitchen">Home & Kitchen</option>
+            </select>
+            <select id="productSubcategory">
+                <option value="mobiles">Mobiles</option>
+                <option value="laptops">Laptops</option>
+                <option value="accessories">Accessories</option>
+                <!-- Add more subcategories as needed -->
+            </select>
+            <input type="text" id="productName" placeholder="Product Name">
+            <input type="number" id="productPrice" placeholder="Price" step="0.01">
+            <input type="text" id="imageUrl" placeholder="Image URL">
+            <input type="number" id="productStock" placeholder="Stock">
+            <button id="addProductBtn">Add Product</button>
+            <p id="error-message" class="error-message"></p>
+        </section>
+
+        <section id="product-list">
+            <!-- Products will be rendered here -->
+        </section>
+    </main>
+
+    <script>
+        document.getElementById("addProductBtn").addEventListener("click", function() {
+            const category = document.getElementById("productCategory").value;
+            const subcategory = document.getElementById("productSubcategory").value;
+            const name = document.getElementById("productName").value.trim();
+            const price = parseFloat(document.getElementById("productPrice").value.trim());
+            const imageUrl = document.getElementById("imageUrl").value.trim();
+            const stock = parseInt(document.getElementById("productStock").value.trim());
+            const errorMessage = document.getElementById("error-message");
+
+            if (!name || isNaN(price) || !imageUrl || isNaN(stock)) {
+                errorMessage.textContent = "Please fill out all fields correctly!";
+                return;
+            }
+
+            addProduct(category, subcategory, name, price, imageUrl, stock);
+            errorMessage.textContent = "";
+
+            document.getElementById("productName").value = "";
+            document.getElementById("productPrice").value = "";
+            document.getElementById("imageUrl").value = "";
+            document.getElementById("productStock").value = "";
+        });
+    </script>
+</body>
+</html>

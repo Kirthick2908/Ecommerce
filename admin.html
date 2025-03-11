@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <a href="analysis.html">Analysis</a>
+            <a href="index.html">Home</a>
+            <button id="logout-btn">Logout</button>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Customers</h2>
+            <input id="customer-id" placeholder="Customer ID">
+            <input id="customer-name" placeholder="Name">
+            <input id="credit-limit" type="number" placeholder="Credit Limit">
+            <button id="add-customer">Add/Update Customer</button>
+            <button id="delete-customer">Delete Customer</button>
+            <div id="customer-message"></div>
+            <div id="customer-error"></div>
+            <div id="customer-list"></div>
+        </section>
+
+        <section>
+            <h2>Products</h2>
+            <select id="product-category" onchange="updateSubcategories()">
+                <option value="">Select Category</option>
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="home-kitchen">Home & Kitchen</option>
+                <option value="groceries">Groceries</option>
+            </select>
+            <select id="product-subcategory" onchange="updateSubSubcategories()">
+                <option value="">Select Subcategory</option>
+            </select>
+            <select id="product-sub-subcategory">
+                <option value="">Select Sub-Subcategory (if applicable)</option>
+            </select>
+            <input id="product-id" placeholder="Product ID (optional for Add)">
+            <input id="product-name" placeholder="Name">
+            <input id="product-price" type="number" placeholder="Price">
+            <input id="product-stock" type="number" placeholder="Stock">
+            <input id="product-credit" type="number" placeholder="Credits per Purchase">
+            <input id="product-imageUrl" placeholder="Image URL (optional)">
+            <button id="add-product">Add Product</button>
+            <button id="fetch-product">Fetch Product</button>
+            <button id="update-product" disabled>Update Product</button>
+            <button id="delete-product" disabled>Delete Product</button>
+            <button id="toggle-active-product" disabled>Activate/Deactivate</button>
+            <div id="product-message"></div>
+            <div id="product-error"></div>
+            <div id="product-list"></div>
+        </section>
+
+        <section>
+            <h2>Reports</h2>
+            <button id="top-customers-btn">Top Customers</button>
+            <div id="top-customers-report"></div>
+            <button id="cash-purchases-btn">Cash Purchases</button>
+            <div id="cash-purchases-report"></div>
+            <div id="cash-purchases-pagination" class="pagination">
+                <button id="cash-prev">Previous</button>
+                <span id="cash-page-num">Page 1</span>
+                <button id="cash-next">Next</button>
+            </div>
+            <button id="credit-purchases-btn">Credit Purchases</button>
+            <div id="credit-purchases-report"></div>
+            <button id="current-stock-btn">Current Stock</button>
+            <div id="current-stock-report"></div>
+            <div id="current-stock-pagination" class="pagination">
+                <button id="stock-prev">Previous</button>
+                <span id="stock-page-num">Page 1</span>
+                <button id="stock-next">Next</button>
+            </div>
+            <button id="high-low-stock-btn">High/Low Stock</button>
+            <div id="high-low-stock-report"></div>
+            <button id="sales-btn">Sales</button>
+            <div id="sales-report"></div>
+            <div id="bills-pagination" class="pagination">
+                <button id="bills-prev">Previous</button>
+                <span id="bills-page-num">Page 1</span>
+                <button id="bills-next">Next</button>
+            </div>
+            <button id="top-bottom-items-btn">Top/Bottom Items</button>
+            <div id="top-bottom-items-report"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { auth, db } from "./js/app.js";
+        import { 
+            fetchAllCustomers, addOrUpdateCustomer, deleteCustomer, 
+            fetchAllProducts, addOrUpdateProduct, deleteProduct, fetchProduct,
+            fetchTopCustomers, fetchCashPurchases, fetchCreditPurchases,
+            fetchCurrentStock, fetchHighLowStock, fetchSales, fetchTopBottomItems,
+            toggleProductActive
+        } from "./js/admin.js";
+
+        const categorySubcategoryMap = {
+            "electronics": ["mobiles", "accessories", "tv", "laptops"],
+            "groceries": ["fruits", "vegetables"],
+            "home-kitchen": ["furniture", "appliances"],
+            "fashion":  ["kids", "men","women"]
+            }
+        
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM fully loaded, initializing admin dashboard...");
+
+            // Customer CRUD
+            document.getElementById("add-customer").addEventListener("click", async () => {
+                const id = document.getElementById("customer-id").value.trim();
+                const name = document.getElementById("customer-name").value.trim();
+                const creditLimit = Number(document.getElementById("credit-limit").value);
+                const message = document.getElementById("customer-message");
+                const error = document.getElementById("customer-error");
+
+                message.innerText = "";
+                error.innerText = "";
+
+                try {
+                    await addOrUpdateCustomer(id, { name, creditLimit });
+                    message.innerText = "Customer added/updated successfully!";
+                    displayCustomers();
+                } catch (err) {
+                    error.innerText = "Error: " + err.message;
+                }
+            });
+
+            document.getElementById("delete-customer").addEventListener("click", async () => {
+                const id = document.getElementById("customer-id").value.trim();
+                const message = document.getElementById("customer-message");
+                const error = document.getElementById("customer-error");
+
+                message.innerText = "";
+                error.innerText = "";
+
+                try {
+                    await deleteCustomer(id);
+                    message.innerText = "Customer deleted successfully!";
+                    displayCustomers();
+                } catch (err) {
+                    error.innerText = "Error: " + err.message;
+                }
+            });
+
+            async function displayCustomers() {
+                try {
+                    const customers = await fetchAllCustomers();
+                    const customerList = document.getElementById("customer-list");
+                    customerList.innerHTML = customers.length > 0 
+                        ? customers.map(c => 
+                            `<p>Name: ${c.name || 'N/A'}, Credit Limit: $${c.creditLimit || 0}, Total Credits: ${c.totalCredits || 0}</p>`
+                          ).join("")
+                        : "<p>No customers found.</p>";
+                } catch (error) {
+                    console.error("Error loading customers:", error);
+                    document.getElementById("customer-error").innerText = "Error loading customers: " + error.message;
+                }
+            }
+
+            // Product CRUD
+            document.getElementById("add-product").addEventListener("click", async () => {
+                const id = document.getElementById("product-id").value.trim() || Date.now().toString();
+                const name = document.getElementById("product-name").value.trim();
+                const price = Number(document.getElementById("product-price").value);
+                const stock = Number(document.getElementById("product-stock").value);
+                const credit = Number(document.getElementById("product-credit").value);
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategory = document.getElementById("product-sub-subcategory").value || null;
+                const imageUrl = document.getElementById("product-imageUrl").value.trim();
+                const message = document.getElementById("product-message");
+                const error = document.getElementById("product-error");
+
+                if (!name || !category || !subcategory || isNaN(price) || isNaN(stock) || isNaN(credit)) {
+                    error.innerText = "Please fill in all required fields: Name, Category, Subcategory, Price, Stock, Credits";
+                    message.innerText = "";
+                    return;
+                }
+
+                try {
+                    await addOrUpdateProduct(category, subcategory, subSubcategory, id, { name, price, stock, credit, imageUrl, active: true });
+                    message.innerText = "Product added successfully!";
+                    error.innerText = "";
+                    displayProducts();
+                } catch (err) {
+                    error.innerText = "Error adding product: " + err.message;
+                    message.innerText = "";
+                }
+            });
+
+            document.getElementById("fetch-product").addEventListener("click", async () => {
+                const id = document.getElementById("product-id").value.trim();
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategory = document.getElementById("product-sub-subcategory").value || null;
+                const message = document.getElementById("product-message");
+                const error = document.getElementById("product-error");
+
+                if (!id || !category || !subcategory) {
+                    error.innerText = "Please enter Product ID, Category, and Subcategory to fetch!";
+                    message.innerText = "";
+                    return;
+                }
+
+                try {
+                    const product = await fetchProduct(category, subcategory, subSubcategory, id);
+                    if (product) {
+                        document.getElementById("product-name").value = product.name || "";
+                        document.getElementById("product-price").value = product.price || "";
+                        document.getElementById("product-stock").value = product.stock || "";
+                        document.getElementById("product-credit").value = product.credit || "";
+                        document.getElementById("product-imageUrl").value = product.imageUrl || "";
+                        message.innerText = "Product fetched successfully!";
+                        error.innerText = "";
+                        document.getElementById("update-product").disabled = false;
+                        document.getElementById("delete-product").disabled = false;
+                        document.getElementById("toggle-active-product").disabled = false;
+                    } else {
+                        error.innerText = "Product not found!";
+                        message.innerText = "";
+                    }
+                } catch (err) {
+                    error.innerText = "Error fetching product: " + err.message;
+                    message.innerText = "";
+                }
+            });
+
+            document.getElementById("update-product").addEventListener("click", async () => {
+                const id = document.getElementById("product-id").value.trim();
+                const name = document.getElementById("product-name").value.trim();
+                const price = Number(document.getElementById("product-price").value);
+                const stock = Number(document.getElementById("product-stock").value);
+                const credit = Number(document.getElementById("product-credit").value);
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategory = document.getElementById("product-sub-subcategory").value || null;
+                const imageUrl = document.getElementById("product-imageUrl").value.trim();
+                const message = document.getElementById("product-message");
+                const error = document.getElementById("product-error");
+
+                if (!name || !category || !subcategory || isNaN(price) || isNaN(stock) || isNaN(credit)) {
+                    error.innerText = "Please fill in all required fields: Name, Category, Subcategory, Price, Stock, Credits";
+                    message.innerText = "";
+                    return;
+                }
+
+                try {
+                    await addOrUpdateProduct(category, subcategory, subSubcategory, id, { name, price, stock, credit, imageUrl, active: true });
+                    message.innerText = "Product updated successfully!";
+                    error.innerText = "";
+                    displayProducts();
+                } catch (err) {
+                    error.innerText = "Error updating product: " + err.message;
+                    message.innerText = "";
+                }
+            });
+
+            document.getElementById("delete-product").addEventListener("click", async () => {
+                const id = document.getElementById("product-id").value.trim();
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategory = document.getElementById("product-sub-subcategory").value || null;
+                const message = document.getElementById("product-message");
+                const error = document.getElementById("product-error");
+
+                try {
+                    await deleteProduct(category, subcategory, subSubcategory, id);
+                    message.innerText = "Product deleted successfully!";
+                    error.innerText = "";
+                    resetProductForm();
+                    displayProducts();
+                } catch (err) {
+                    error.innerText = "Error deleting product: " + err.message;
+                    message.innerText = "";
+                }
+            });
+
+            document.getElementById("toggle-active-product").addEventListener("click", async () => {
+                const id = document.getElementById("product-id").value.trim();
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategory = document.getElementById("product-sub-subcategory").value || null;
+                const message = document.getElementById("product-message");
+                const error = document.getElementById("product-error");
+
+                try {
+                    const product = await fetchProduct(category, subcategory, subSubcategory, id);
+                    if (product) {
+                        const currentActive = product.active || false;
+                        await toggleProductActive(category, subcategory, subSubcategory, id, !currentActive);
+                        message.innerText = `Product ${currentActive ? 'deactivated' : 'activated'} successfully!`;
+                        error.innerText = "";
+                        displayProducts();
+                    } else {
+                        error.innerText = "Product not found!";
+                        message.innerText = "";
+                    }
+                } catch (err) {
+                    error.innerText = "Error toggling product status: " + err.message;
+                    message.innerText = "";
+                }
+            });
+
+            async function displayProducts() {
+                try {
+                    const products = await fetchAllProducts();
+                    const productList = document.getElementById("product-list");
+                    productList.innerHTML = products.length > 0 
+                        ? products.map(p => `
+                            <div>
+                                <h3>${p.name || 'Unnamed Product'} - $${p.price || 0}</h3>
+                                <img src="${p.imageUrl || 'https://placehold.co/100'}" width="100" alt="${p.name || 'No Image'}">
+                                <p>ID: ${p.id}, Path: ${p.category}/${p.subcategory}${p.subSubcategory ? '/subcategories/' + p.subSubcategory : ''}, Stock: ${p.stock || 0}, Credits: ${p.credit || 0}, Active: ${p.active ? 'Yes' : 'No'}</p>
+                            </div>
+                        `).join("")
+                        : "<p>No products found.</p>";
+                } catch (error) {
+                    console.error("Error displaying products:", error);
+                    document.getElementById("product-error").innerText = "Error loading products: " + error.message;
+                }
+            }
+
+            function resetProductForm() {
+                document.getElementById("product-id").value = "";
+                document.getElementById("product-name").value = "";
+                document.getElementById("product-price").value = "";
+                document.getElementById("product-stock").value = "";
+                document.getElementById("product-credit").value = "";
+                document.getElementById("product-imageUrl").value = "";
+                document.getElementById("update-product").disabled = true;
+                document.getElementById("delete-product").disabled = true;
+                document.getElementById("toggle-active-product").disabled = true;
+            }
+
+            // Dynamic subcategory population
+            window.updateSubcategories = function() {
+                const category = document.getElementById("product-category").value;
+                const subcategorySelect = document.getElementById("product-subcategory");
+                const subSubcategorySelect = document.getElementById("product-sub-subcategory");
+                subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                subSubcategorySelect.innerHTML = '<option value="">Select Sub-Subcategory (if applicable)</option>';
+
+                if (category && categorySubcategoryMap[category]) {
+                    const subcategories = categorySubcategoryMap[category];
+                    if (Array.isArray(subcategories)) {
+                        subcategories.forEach(sub => {
+                            const option = document.createElement("option");
+                            option.value = sub;
+                            option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+                            subcategorySelect.appendChild(option);
+                        });
+                    } else {
+                        Object.keys(subcategories).forEach(sub => {
+                            const option = document.createElement("option");
+                            option.value = sub;
+                            option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+                            subcategorySelect.appendChild(option);
+                        });
+                    }
+                }
+            };
+
+            window.updateSubSubcategories = function() {
+                const category = document.getElementById("product-category").value;
+                const subcategory = document.getElementById("product-subcategory").value;
+                const subSubcategorySelect = document.getElementById("product-sub-subcategory");
+                subSubcategorySelect.innerHTML = '<option value="">Select Sub-Subcategory (if applicable)</option>';
+
+                if (category && subcategory && categorySubcategoryMap[category] && !Array.isArray(categorySubcategoryMap[category])) {
+                    const subSubcategories = categorySubcategoryMap[category][subcategory];
+                    if (subSubcategories) {
+                        subSubcategories.forEach(subSub => {
+                            const option = document.createElement("option");
+                            option.value = subSub;
+                            option.textContent = subSub.charAt(0).toUpperCase() + subSub.slice(1);
+                            subSubcategorySelect.appendChild(option);
+                        });
+                    }
+                }
+            };
+
+            // Pagination states
+            let cashPurchasesData = [];
+            let currentStockData = [];
+            let billsData = [];
+            const itemsPerPage = 6;
+            let cashPage = 1;
+            let stockPage = 1;
+            let billsPage = 1;
+
+            // Reports with Tables
+            async function displayReports() {
+                try {
+                    // Top Customers (Table)
+                    const topCustomers = await fetchTopCustomers();
+                    document.getElementById("top-customers-report").innerHTML = `
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Order Count</th>
+                                    <th>Total Credits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${topCustomers.length > 0 
+                                    ? topCustomers.map(r => `
+                                        <tr>
+                                            <td>${r.name}</td>
+                                            <td>${r.orderCount}</td>
+                                            <td>${r.totalCredits}</td>
+                                        </tr>
+                                    `).join("")
+                                    : "<tr><td colspan='3'>No top customers found.</td></tr>"}
+                            </tbody>
+                        </table>
+                    `;
+
+                    // Cash Purchases (Grouped by User in Table)
+                    cashPurchasesData = await fetchCashPurchases();
+                    displayCashPurchases(cashPage);
+
+                    // Credit Purchases (Grouped by User in Table)
+                    const creditPurchases = await fetchCreditPurchases();
+                    const creditByUser = groupByUser(creditPurchases);
+                    document.getElementById("credit-purchases-report").innerHTML = `
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Purchases</th>
+                                    <th>Total Amount</th>
+                                    <th>Total Credits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.keys(creditByUser).length > 0 
+                                    ? Object.entries(creditByUser).map(([name, purchases]) => `
+                                        <tr>
+                                            <td>${name}</td>
+                                            <td>
+                                                ${purchases.map(p => `
+                                                    <div>Date: ${p.date}, Amount: $${p.total.toFixed(2)}, Credits: ${p.creditsEarned}</div>
+                                                `).join("")}
+                                            </td>
+                                            <td>$${purchases.reduce((sum, p) => sum + p.total, 0).toFixed(2)}</td>
+                                            <td>${purchases.reduce((sum, p) => sum + p.creditsEarned, 0)}</td>
+                                        </tr>
+                                    `).join("")
+                                    : "<tr><td colspan='4'>No credit purchases found.</td></tr>"}
+                            </tbody>
+                        </table>
+                    `;
+
+                    // Current Stock (Table with Pagination)
+                    currentStockData = await fetchCurrentStock();
+                    displayCurrentStock(stockPage);
+
+                    // High/Low Stock (Summary Card)
+                    const highLowStock = await fetchHighLowStock();
+                    document.getElementById("high-low-stock-report").innerHTML = `
+                        <div class="stock-summary">
+                            <div class="stock-card">
+                                <h3>Highest Stock</h3>
+                                <p>Item: ${highLowStock.high?.name || 'N/A'}</p>
+                                <p>Stock: ${highLowStock.high?.stock || 0}</p>
+                            </div>
+                            <div class="stock-card">
+                                <h3>Lowest Stock</h3>
+                                <p>Item: ${highLowStock.low?.name || 'N/A'}</p>
+                                <p>Stock: ${highLowStock.low?.stock || 0}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    // Sales (Table for Bills + Summary)
+                    const { sales, totalSales, bills, totalCredits } = await fetchSales();
+                    billsData = bills;
+                    document.getElementById("sales-report").innerHTML = `
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Credits Earned</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bills-tbody"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>$${Number(totalSales || 0).toFixed(2)}</td>
+                                    <td>${totalCredits}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p><strong>Total Sales to Date: $${Number(totalSales || 0).toFixed(2)}</strong></p>
+                        <p><strong>Total Credits Awarded: ${totalCredits}</strong></p>
+                    `;
+                    displayBills(billsPage);
+
+                    // Top/Bottom Items (Table)
+                    const { top, bottom } = await fetchTopBottomItems();
+                    document.getElementById("top-bottom-items-report").innerHTML = `
+                        <div class="top-bottom-container">
+                            <div>
+                                <h3>Top 5 Items</h3>
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item Name</th>
+                                            <th>Sales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${top.length > 0 
+                                            ? top.map(item => `
+                                                <tr>
+                                                    <td>${item.name}</td>
+                                                    <td>${item.sales}</td>
+                                                </tr>
+                                            `).join("")
+                                            : "<tr><td colspan='2'>No top items found.</td></tr>"}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <h3>Bottom 5 Items</h3>
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item Name</th>
+                                            <th>Sales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${bottom.length > 0 
+                                            ? bottom.map(item => `
+                                                <tr>
+                                                    <td>${item.name}</td>
+                                                    <td>${item.sales}</td>
+                                                </tr>
+                                            `).join("")
+                                            : "<tr><td colspan='2'>No bottom items found.</td></tr>"}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+
+                } catch (error) {
+                    console.error("Error loading reports:", error);
+                    document.getElementById("sales-report").innerHTML = "<p>Error loading reports. Please check the console.</p>";
+                }
+            }
+
+            // Helper function to group purchases by user
+            function groupByUser(purchases) {
+                const grouped = {};
+                purchases.forEach(p => {
+                    if (!grouped[p.name]) grouped[p.name] = [];
+                    grouped[p.name].push(p);
+                });
+                return grouped;
+            }
+
+            function displayCashPurchases(page) {
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedData = cashPurchasesData.slice(start, end);
+                const cashByUser = groupByUser(paginatedData);
+
+                document.getElementById("cash-purchases-report").innerHTML = `
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Purchases</th>
+                                <th>Total Amount</th>
+                                <th>Total Credits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.keys(cashByUser).length > 0 
+                                ? Object.entries(cashByUser).map(([name, purchases]) => `
+                                    <tr>
+                                        <td>${name}</td>
+                                        <td>
+                                            ${purchases.map(p => `
+                                                <div>Date: ${p.date}, Amount: $${p.total.toFixed(2)}, Credits: ${p.creditsEarned}</div>
+                                            `).join("")}
+                                        </td>
+                                        <td>$${purchases.reduce((sum, p) => sum + p.total, 0).toFixed(2)}</td>
+                                        <td>${purchases.reduce((sum, p) => sum + p.creditsEarned, 0)}</td>
+                                    </tr>
+                                `).join("")
+                                : "<tr><td colspan='4'>No cash purchases found.</td></tr>"}
+                        </tbody>
+                    </table>
+                `;
+
+                document.getElementById("cash-page-num").innerText = `Page ${page}`;
+                document.getElementById("cash-prev").style.display = page === 1 ? 'none' : 'inline';
+                document.getElementById("cash-next").style.display = end >= cashPurchasesData.length ? 'none' : 'inline';
+            }
+
+            function displayCurrentStock(page) {
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedData = currentStockData.slice(start, end);
+
+                document.getElementById("current-stock-report").innerHTML = `
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${paginatedData.length > 0 
+                                ? paginatedData.map(r => `
+                                    <tr>
+                                        <td>${r.name}</td>
+                                        <td>${r.stock || 0}</td>
+                                    </tr>
+                                `).join("")
+                                : "<tr><td colspan='2'>No stock data found.</td></tr>"}
+                        </tbody>
+                    </table>
+                `;
+
+                document.getElementById("stock-page-num").innerText = `Page ${page}`;
+                document.getElementById("stock-prev").style.display = page === 1 ? 'none' : 'inline';
+                document.getElementById("stock-next").style.display = end >= currentStockData.length ? 'none' : 'inline';
+            }
+
+            function displayBills(page) {
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedData = billsData.slice(start, end);
+
+                const tbody = document.getElementById("bills-tbody");
+                tbody.innerHTML = paginatedData.length > 0 
+                    ? paginatedData.map(b => `
+                        <tr>
+                            <td>${b.date}</td>
+                            <td>$${Number(b.total || 0).toFixed(2)}</td>
+                            <td>${b.creditsEarned}</td>
+                        </tr>
+                    `).join("")
+                    : "<tr><td colspan='3'>No bills found.</td></tr>";
+
+                document.getElementById("bills-page-num").innerText = `Page ${page}`;
+                document.getElementById("bills-prev").style.display = page === 1 ? 'none' : 'inline';
+                document.getElementById("bills-next").style.display = end >= billsData.length ? 'none' : 'inline';
+            }
+
+            // Pagination event listeners
+            document.getElementById("cash-prev").addEventListener("click", () => {
+                if (cashPage > 1) {
+                    cashPage--;
+                    displayCashPurchases(cashPage);
+                }
+            });
+
+            document.getElementById("cash-next").addEventListener("click", () => {
+                if ((cashPage * itemsPerPage) < cashPurchasesData.length) {
+                    cashPage++;
+                    displayCashPurchases(cashPage);
+                }
+            });
+
+            document.getElementById("stock-prev").addEventListener("click", () => {
+                if (stockPage > 1) {
+                    stockPage--;
+                    displayCurrentStock(stockPage);
+                }
+            });
+
+            document.getElementById("stock-next").addEventListener("click", () => {
+                if ((stockPage * itemsPerPage) < currentStockData.length) {
+                    stockPage++;
+                    displayCurrentStock(stockPage);
+                }
+            });
+
+            document.getElementById("bills-prev").addEventListener("click", () => {
+                if (billsPage > 1) {
+                    billsPage--;
+                    displayBills(billsPage);
+                }
+            });
+
+            document.getElementById("bills-next").addEventListener("click", () => {
+                if ((billsPage * itemsPerPage) < billsData.length) {
+                    billsPage++;
+                    displayBills(billsPage);
+                }
+            });
+
+            // Report button listeners
+            document.getElementById("top-customers-btn").addEventListener("click", displayReports);
+            document.getElementById("cash-purchases-btn").addEventListener("click", displayReports);
+            document.getElementById("credit-purchases-btn").addEventListener("click", displayReports);
+            document.getElementById("current-stock-btn").addEventListener("click", displayReports);
+            document.getElementById("high-low-stock-btn").addEventListener("click", displayReports);
+            document.getElementById("sales-btn").addEventListener("click", displayReports);
+            document.getElementById("top-bottom-items-btn").addEventListener("click", displayReports);
+
+            // Logout
+            document.getElementById("logout-btn").addEventListener("click", () => {
+                auth.signOut().then(() => {
+                    window.location.href = "login.html";
+                }).catch(error => {
+                    console.error("Logout failed:", error);
+                });
+            });
+
+            // Initial load
+            displayCustomers();
+            displayProducts();
+            displayReports();
+        });
+    </script>
+</body>
+</html>

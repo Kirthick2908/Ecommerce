@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - E-Commerce</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/product.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo"><a href="index.html">WELCOME!!</a></div>
+        <div class="search-bar">
+            <input type="text" id="product-search" placeholder="Search for products...">
+        </div>
+        <nav>
+            <button id="user-login-btn">Login</button>
+            <button id="profile-btn" style="display: none;">Profile</button>
+            <a href="cart.html" id="cart-link" style="display: none;">Cart</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="categories">
+            <ul>
+                <li>
+                    <img src="https://cdn-icons-png.flaticon.com/512/679/679922.png" alt="All">
+                    <a href="#">All</a>
+                    <div class="dropdown">
+                        <ul>
+                            <li><a href="#" onclick="filterByCategory(null, null)">All Products</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://m.media-amazon.com/images/I/71Gv421uqFL.jpg" alt="Electronics">
+                    <a href="#">Electronics</a>
+                    <div class="dropdown">
+                        <ul>
+                            <li><a href="#" onclick="filterByCategory('electronics', 'mobiles')">Mobiles</a></li>
+                            <li><a href="#" onclick="filterByCategory('electronics', 'laptops')">Laptops</a></li>
+                            <li><a href="#" onclick="filterByCategory('electronics', 'accessories')">Accessories</a></li>
+                            <li><a href="#" onclick="filterByCategory('electronics', 'tv')">TV</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://www.tastingtable.com/img/gallery/how-to-eat-dragon-fruit-for-the-uninitiated/l-intro-1682966430.jpg" alt="Groceries">
+                    <a href="#">Groceries</a>
+                    <div class="dropdown">
+                        <ul>
+                            <li><a href="#" onclick="filterByCategory('groceries', 'food')">Fruits</a></li>
+                            <li><a href="#" onclick="filterByCategory('groceries', 'vegetables')">Vegetables</a></li>
+                            <li><a href="#" onclick="filterByCategory('groceries', 'Dairy')">Dairy</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://i.pinimg.com/736x/a3/1f/d6/a31fd602523df67500691d05615ceb87.jpg" alt="Home & Kitchen">
+                    <a href="#">Home & Kitchen</a>
+                    <div class="dropdown">
+                        <ul>
+                            <li><a href="#" onclick="filterByCategory('home-kitchen', 'furniture')">Furniture</a></li>
+                            <li><a href="#" onclick="filterByCategory('home-kitchen', 'appliances')">Appliances</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://i.etsystatic.com/25436474/r/il/f843cc/4409813844/il_794xN.4409813844_jegp.jpg" alt="Fashion">
+                    <a href="#">Fashion</a>
+                    <div class="dropdown">
+                        <ul>
+                            <li><a href="#" onclick="filterByCategory('fashion', 'kids')">Kids</a></li>
+                            <li><a href="#" onclick="filterByCategory('fashion', 'men')">Men</a></li>
+                            <li><a href="#" onclick="filterByCategory('fashion', 'women')">Women</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="slideshow">
+            <div class="slides">
+                <div class="slide" style="background-image: url('https://wallpapers.com/images/featured/mix-color-background-r4e9huzf751xgw78.jpg');">
+                    <img src="https://cdn.vectorstock.com/i/preview-1x/13/54/speech-banner-and-blue-shade-with-word-redeem-now-vector-47111354.jpg" alt="Credit Card" class="slide-image">
+                    <div class="slide-content">Credits on Every Purchase, Redeem it in the next purchase</div>
+                </div>
+                <div class="slide" style="background-image: url('https://wallpapers.com/images/featured/mix-color-background-r4e9huzf751xgw78.jpg');">
+                    <img src="https://static.vecteezy.com/system/resources/previews/027/574/944/original/20-percent-off-transparent-background-png.png" alt="New User" class="slide-image">
+                    <div class="slide-content">New User? Use code NEW20 to get upto 20% off on every products</div>
+                </div>
+                <div class="slide" style="background-image: url('https://wallpapers.com/images/featured/mix-color-background-r4e9huzf751xgw78.jpg');">
+                    <img src="https://www.photomarket.in/image/catalog/Paytm%20Cashback.png" alt="Cashback" class="slide-image">
+                    <div class="slide-content">Cashback on Every Purchase, Offers availed on all UPI purchase</div>
+                </div>
+                <div class="slide" style="background-image: url('https://wallpapers.com/images/featured/mix-color-background-r4e9huzf751xgw78.jpg');">
+                    <img src="https://i.pinimg.com/736x/a3/1f/d6/a31fd602523df67500691d05615ceb87.jpg" alt="Sofa Sale" class="slide-image">
+                    <div class="slide-content">Sofa at 50% Off, Many more exciting offers on furniture</div>
+                </div>
+                <div class="slide" style="background-image: url('https://wallpapers.com/images/featured/mix-color-background-r4e9huzf751xgw78.jpg');">
+                    <img src="https://cdn.pixabay.com/photo/2021/09/25/17/43/iphone-13-6655517_640.jpg" alt="Electronics Sale" class="slide-image">
+                    <div class="slide-content">Hottest deals - Electronics at Birthday sale </div>
+                </div>
+            </div>
+            <button class="prev">❮</button>
+            <button class="next">❯</button>
+        </div>
+
+        <section>
+            <h2>Featured Products</h2>
+            <div class="search-filter">
+                <select id="sort-products">
+                    <option value="">Sort By</option>
+                    <option value="price-low-high">Price: Low to High</option>
+                    <option value="price-high-low">Price: High to Low</option>
+                </select>
+            </div>
+            <div id="product-list"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { auth } from "./js/app.js";
+        import { fetchProducts } from "./js/product.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginBtn = document.getElementById("user-login-btn");
+            const profileBtn = document.getElementById("profile-btn");
+            const cartLink = document.getElementById("cart-link");
+            const searchInput = document.getElementById("product-search");
+            const sortSelect = document.getElementById("sort-products");
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    loginBtn.style.display = "none";
+                    profileBtn.style.display = "inline";
+                    cartLink.style.display = "inline";
+                } else {
+                    loginBtn.style.display = "inline";
+                    profileBtn.style.display = "none";
+                    cartLink.style.display = "none";
+                }
+            });
+
+            profileBtn.addEventListener("click", () => {
+                window.location.href = "profile.html";
+            });
+
+            loginBtn.addEventListener("click", () => {
+                window.location.href = "login.html";
+            });
+
+            fetchProducts(); // Load all products by default on page load
+            searchInput.addEventListener("input", () => fetchProducts());
+            sortSelect.addEventListener("change", () => fetchProducts());
+        });
+
+        // Filter products by category and subcategory
+        window.filterByCategory = function(category, subcategory) {
+            const searchInput = document.getElementById("product-search");
+            searchInput.value = ""; // Clear search input to avoid interference
+            fetchProducts(category, subcategory); // Call fetchProducts with filters
+        };
+
+        // Slideshow functionality
+        const slides = document.querySelector('.slides');
+        const slideCount = document.querySelectorAll('.slide').length;
+        let currentIndex = 0;
+        let slideInterval;
+        const slideDelay = 5000; // 5 seconds between auto slides
+
+        function showSlide(index) {
+            slides.style.transform = `translateX(-${index * 100}%)`;
+        }
+
+        function startAutoSlide() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % slideCount;
+                showSlide(currentIndex);
+            }, slideDelay);
+        }
+
+        document.querySelector('.prev').addEventListener('click', () => {
+            clearInterval(slideInterval);
+            currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+            showSlide(currentIndex);
+            setTimeout(startAutoSlide, 3000);
+        });
+
+        document.querySelector('.next').addEventListener('click', () => {
+            clearInterval(slideInterval);
+            currentIndex = (currentIndex + 1) % slideCount;
+            showSlide(currentIndex);
+            setTimeout(startAutoSlide, 3000);
+        });
+
+        document.querySelector('.slideshow').addEventListener('mouseenter', () => {
+            clearInterval(slideInterval);
+        });
+
+        document.querySelector('.slideshow').addEventListener('mouseleave', () => {
+            startAutoSlide();
+        });
+
+        startAutoSlide();
+    </script>
+</body>
+</html>
